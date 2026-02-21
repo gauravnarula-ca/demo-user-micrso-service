@@ -6,6 +6,7 @@ import com.gauravnarula.userservice.mapper.UserMapper;
 import com.gauravnarula.userservice.model.User;
 import com.gauravnarula.userservice.service.UserService;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,8 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@Data
-@RequestMapping("api/v1/user")
+@RequiredArgsConstructor
+@RequestMapping("api/v1/users")
 public class UserController {
 
     private final UserService userService;
@@ -24,16 +25,14 @@ public class UserController {
 
     @GetMapping
     public List<UserDTO> getUser(){
-        return userService.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+        return userService.findAll().stream().map(userMapper::toDTO).toList();
     }
 
     @GetMapping("/{id}")
-    public List<UserDTO> getUserById(@PathVariable Long id){
-        List<UserDTO> list = userService.findById(id).stream().map(userMapper::toDTO).toList();
-        if (list.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
-        }
-        return list;
+    public UserDTO getUserById(@PathVariable Long id){
+        return userService.findById(id)
+                .map(userMapper::toDTO)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
     }
 
     @PostMapping
