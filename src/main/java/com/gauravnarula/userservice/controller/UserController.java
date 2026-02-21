@@ -16,18 +16,18 @@ import java.util.stream.Collectors;
 
 @RestController
 @Data
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/user")
 public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/user/all")
+    @GetMapping
     public List<UserDTO> getUser(){
         return userService.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
     }
 
-    @GetMapping("user/{id}")
+    @GetMapping("/{id}")
     public List<UserDTO> getUserById(@PathVariable Long id){
         List<UserDTO> list = userService.findById(id).stream().map(userMapper::toDTO).toList();
         if (list.isEmpty()){
@@ -36,7 +36,7 @@ public class UserController {
         return list;
     }
 
-    @PostMapping("user/add")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDTO registerUser(@RequestBody AddUserDTO addUserDTO){
         return userService.save(addUserDTO);
